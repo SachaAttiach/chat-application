@@ -21,9 +21,9 @@ const Chat = ({ location }) => {
     setName(name);
 
     socket.emit("join", { name, room }, ({ error }) => {
-      if (error) {
-        alert(error);
-      }
+      // if (error) {
+      //   alert(error);
+      // }
     });
 
     return () => {
@@ -34,4 +34,5 @@ const Chat = ({ location }) => {
 
   return <h1>Chat</h1>;
 };
+
 export default Chat;
