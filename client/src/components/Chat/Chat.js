@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 //to help get data from the url
 import queryString from "query-string";
 import io from "socket.io-client";
+import "./Chat.css";
 
 let socket;
 
@@ -10,6 +11,8 @@ const Chat = ({ location }) => {
   //also, location.search is something we use from react router dom
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState([]);
   const ENDPOINT = "http://localhost:5000";
 
   useEffect(() => {
@@ -32,7 +35,34 @@ const Chat = ({ location }) => {
     };
   }, [ENDPOINT, location.search]);
 
-  return <h1>Chat</h1>;
+  useEffect(() => {
+    socket.on("message", (message) => {
+      setMessages([...messages, message]);
+    });
+  }, [messages]);
+
+  const sendMessage = (event) => {
+    event.preventDefault();
+    if (message) {
+      socket.emit("sendMessage", message, () => setMessage(""));
+    }
+  };
+
+  console.log(message, messages);
+
+  return (
+    <div className="outerContainer">
+      <div className="container">
+        <input
+          value={message}
+          onchange={(event) => setMessage(event.target.value)}
+          onKeyPress={(event) =>
+            event.key === "Enter" ? sendMessage(event) : null
+          }
+        />
+      </div>
+    </div>
+  );
 };
 
 export default Chat;
