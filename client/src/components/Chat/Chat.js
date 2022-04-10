@@ -10,17 +10,28 @@ const Chat = ({ location }) => {
   //also, location.search is something we use from react router dom
   const [name, setName] = useState("");
   const [room, setRoom] = useState("");
-  const ENDPOINT = "localhost:5000";
+  const ENDPOINT = "http://localhost:5000";
+
   useEffect(() => {
     const { name, room } = queryString.parse(location.search);
 
     socket = io(ENDPOINT);
 
-    setName(name);
     setRoom(room);
+    setName(name);
 
-    console.log(socket);
+    socket.emit("join", { name, room }, ({ error }) => {
+      if (error) {
+        alert(error);
+      }
+    });
+
+    return () => {
+      socket.emit("disconnect");
+      socket.off();
+    };
   }, [ENDPOINT, location.search]);
+
   return <h1>Chat</h1>;
 };
 export default Chat;
